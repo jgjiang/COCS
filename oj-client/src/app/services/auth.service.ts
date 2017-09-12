@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/toPromise';
 import * as auth0 from 'auth0-js';
+import { Http, Response, Headers} from '@angular/http';
 
 
 @Injectable()
@@ -19,7 +21,7 @@ export class AuthService {
 
   userProfile: any;
 
-  constructor(public router: Router) {}
+  constructor(public router: Router, private http: Http) {}
 
 
   public login(): Promise <Object> {
@@ -91,6 +93,27 @@ export class AuthService {
       }
       cb(err, profile);
     });
+  }
+
+  public resetPassword(): void {
+    this.getProfile((err, profile) => {
+      this.userProfile = profile;
+    });
+    const url = `https://firjjg.eu.auth0.com/dbconnections/change_password`;
+    const headers =  new Headers({ 'content-type': 'application/json' });
+    let body = { client_id: 'MMgLSg_A8pS369maq7TCnH0xmd3JHkn0',
+        email: this.userProfile.name,
+        connection: 'Username-Password-Authentication' };
+    this.http.post(url, body, headers).toPromise()
+      .then((res: Response) => {
+          console.log(res.json());
+      }).catch(this.handleError);
+
+  }
+
+  public handleError(error: any): Promise <any> {
+    console.error('Error Occurred', error);
+    return Promise.reject(error.meassage || error);
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
@@ -7,9 +7,30 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfileComponent implements OnInit {
 
-  constructor() { }
+  username: string = ' ';
+  email: string = ' ';
+  profile: any;
+
+  constructor(@Inject('auth') private auth) { }
 
   ngOnInit() {
+    if (this.auth.isAuthenticated()) {
+      if (this.auth.userProfile) {
+        this.profile = this.auth.userProfile;
+        this.username = this.profile.nickname;
+        this.email = this.profile.name;
+      } else {
+        this.auth.getProfile((err, profile) => {
+          this.profile = profile;
+          this.username = this.profile.nickname;
+          this.email = this.profile.name;
+        });
+      }
+    }
+  }
+
+  resetPassword() {
+    this.auth.resetPassword();
   }
 
 }
