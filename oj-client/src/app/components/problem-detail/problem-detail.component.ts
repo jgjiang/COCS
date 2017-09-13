@@ -13,7 +13,7 @@ export class ProblemDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    @Inject("data") private data
+    @Inject('data') private data
   ) { }
 
   ngOnInit() {

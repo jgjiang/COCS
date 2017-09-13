@@ -18,12 +18,12 @@ export class ProfileComponent implements OnInit {
       if (this.auth.userProfile) {
         this.profile = this.auth.userProfile;
         this.username = this.profile.nickname;
-        this.email = this.profile.name;
+        this.email = this.profile.email;
       } else {
         this.auth.getProfile((err, profile) => {
           this.profile = profile;
           this.username = this.profile.nickname;
-          this.email = this.profile.name;
+          this.email = this.profile.email;
         });
       }
     }

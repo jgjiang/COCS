@@ -5,9 +5,9 @@ import 'rxjs/add/operator/toPromise';
 import * as auth0 from 'auth0-js';
 import { Http, Response, Headers} from '@angular/http';
 
-
 @Injectable()
 export class AuthService {
+  requestedScopes: string = 'openid profile email';
 
   auth0 = new auth0.WebAuth({
     clientID: 'MMgLSg_A8pS369maq7TCnH0xmd3JHkn0',
@@ -15,7 +15,7 @@ export class AuthService {
     responseType: 'token id_token',
     audience: 'https://firjjg.eu.auth0.com/userinfo',
     redirectUri: 'http://localhost:3000',
-    scope: 'openid profile'
+    scope: this.requestedScopes
 
   });
 
@@ -58,11 +58,14 @@ export class AuthService {
   }
 
   private setSession(authResult): void {
+
+    const scopes = authResult.scope || this.requestedScopes || '';
     // Set the time that the access token will expire at
     const expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
     localStorage.setItem('access_token', authResult.accessToken);
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
+    localStorage.setItem('scopes', JSON.stringify(scopes));
   }
 
   public logout(): void {
@@ -115,5 +118,6 @@ export class AuthService {
     console.error('Error Occurred', error);
     return Promise.reject(error.meassage || error);
   }
+
 
 }
