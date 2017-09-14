@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
 
+
 declare var ace: any;
 @Component({
   selector: 'app-editor',
@@ -52,19 +53,25 @@ export class EditorComponent implements OnInit {
     this.editor = ace.edit('editor');
     this.editor.setTheme('ace/theme/cobalt');
     this.resetEditor();
-    this.editor.getSession().setMode('ace/mode/java');
-    this.editor.setValue(this.defaultContent['Java']);
     this.editor.$blockScrolling = Infinity;
     document.getElementsByTagName('textarea')[0].focus();
 
     this.collaboration.init(this.editor, this.sessionId);
     this.editor.lastAppliedChange = null;
 
+    // 接受变化，并进行响应
     this.editor.on('change', (e) => {
       console.log('editor changes: ' + JSON.stringify(e));
       if (this.editor.lastAppliedChange !== e) {
         this.collaboration.change(JSON.stringify(e));
       }
+    });
+
+    // 处理cursor 的变化
+    this.editor.getSession().getSelection().on('changeCursor', () => {
+      let cursor = this.editor.getSession().getSelection().getCursor();
+      console.log('cursor moves: ' + JSON.stringify(cursor));
+      this.collaboration.cursorMove(JSON.stringify(cursor));
     });
 
   }
