@@ -17,6 +17,7 @@ import {AuthService} from './services/auth.service';
 import { ProfileComponent } from './components/profile/profile.component';
 import {AuthGuardService} from './services/auth-guard.service';
 import { EditorComponent } from './components/editor/editor.component';
+import {CollaborationService} from './services/collaboration.service';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,12 @@ import { EditorComponent } from './components/editor/editor.component';
   }, {
     provide: 'authGuard',
     useClass: AuthGuardService
-  }, AuthGuardService],
+  }, AuthGuardService,
+    {
+      provide: 'collaboration',
+      useClass: CollaborationService
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
