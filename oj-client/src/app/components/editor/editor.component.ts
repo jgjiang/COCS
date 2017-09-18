@@ -15,6 +15,8 @@ export class EditorComponent implements OnInit {
   language: string = 'Java'; // default
   sessionId: string;
 
+  output: string;
+
   languageModeMappings = {
     'Java': 'java',
     'C++': 'c_cpp',
@@ -39,7 +41,9 @@ export class EditorComponent implements OnInit {
         def example():
             # Write your Python code here`
     };
-  constructor(@Inject('collaboration') private collaboration, private route: ActivatedRoute) { }
+  constructor(@Inject('collaboration') private collaboration,
+              private route: ActivatedRoute,
+              @Inject('data') private data) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -86,11 +90,17 @@ export class EditorComponent implements OnInit {
   resetEditor(): void {
     this.editor.getSession().setMode('ace/mode/' + this.languageModeMappings[this.language]);
     this.editor.setValue(this.defaultContent[this.language]);
+    this.output = '';
   }
 
   submit(): void {
     let userCode = this.editor.getValue();
-    console.log(userCode);
+    let data = {
+      user_code: userCode,
+      lang: this.language.toLowerCase()
+    };
+
+    this.data.buildAndRun(data).then(res => this.output = res.text);
   }
 
 }
